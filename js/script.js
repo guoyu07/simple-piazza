@@ -5,7 +5,7 @@
     var leftPane = document.getElementById('left-pane');
 
     // button and input elements
-    // TODO: add button/input element selectors here
+    var newBtn = document.querySelector('#interactors .btn');
 
     // script elements that correspond to Handlebars templates
     var questionFormTemplate = document.getElementById('question-form-template');
@@ -85,6 +85,14 @@
     }
 
 
+    function addNewListener() {
+        newBtn.addEventListener('click', function(event) {
+            rightPane.innerHTML = templates.renderQuestionForm();
+            addFormListener();
+        })
+    }
+
+
     /* Add question to left-pane list, called on submit of new question form */
     function addQuestion(subjectInput, questionInput) {
         if(subjectInput.value && questionInput.value) {
@@ -115,6 +123,7 @@
     leftPane.innerHTML = templates.renderQuestionsList({questions : questionsArray});
     addFormListener();
     addListListener();
+    addNewListener();
 
 
 })(this, this.document);
