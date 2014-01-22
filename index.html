@@ -40,7 +40,7 @@
         <script type="text/x-handlebars-template" id="questions-template">
             {{#if questions}}
                 {{#each questions}}
-                {{! this.id represents this question's identifier in
+                {{! this.id represents this questions identifier in
                     localStorage. }}
                 <div class="list-question question-info" id="{{ this.id }}">
                     <h3>{{ this.subject }}</h3>
@@ -122,7 +122,12 @@
         </script>
 
         <!-- JavaScript -->
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
         <script type="text/javascript" src="js/handlebars.js"></script>
         <script type="text/javascript" src="js/script.js"></script>
+
+
+        <!-- Libraries -->
+        
     </body>
 </html>
