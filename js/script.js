@@ -2,8 +2,6 @@
 
     // pane elements
     var rightPane = document.getElementById('right-pane');
-    
-    // TODO: add other panes here
     var leftPane = document.getElementById('left-pane');
 
     // button and input elements
@@ -12,14 +10,13 @@
     // script elements that correspond to Handlebars templates
     var questionFormTemplate = document.getElementById('question-form-template');
     var questionsTemplate = document.getElementById('questions-template');
-    // TODO: add other script elements corresponding to templates here
+    var expandedTemplate = document.getElementById('expanded-question-template');
 
     // compiled Handlebars templates
     var templates = {
         renderQuestionForm: Handlebars.compile(questionFormTemplate.innerHTML),
-        
-        // TODO: add other Handlebars render functions here
-        renderQuestionsList: Handlebars.compile(questionsTemplate.innerHTML)
+        renderQuestionsList: Handlebars.compile(questionsTemplate.innerHTML),
+        renderExpandedQuestion: Handlebars.compile(expandedTemplate.innerHTML)
     };
 
     /* Returns the questions stored in localStorage. */
@@ -41,24 +38,49 @@
         localStorage.questions = JSON.stringify(questions);
     }
 
-    // TODO: tasks 1-5 and one extension
-
 
     /* Add event listener to new question form, override default on submit */
     function addFormListener() {
-        var $form = $('#question-form');
-        var form = $form[0];
-        var $subjectInput = $(':input[name="subject"]');
-        var subjectInput = $subjectInput[0];
-        console.log("subjectInput:", subjectInput);
-        var $questionInput = $('textarea[name="question"]');
-        var questionInput = $questionInput[0];
-        console.log("questionInput", questionInput);
+
+        var form = $('#question-form')[0];
+        var subjectInput = $(':input[name="subject"]')[0];
+        var questionInput = $('textarea[name="question"]')[0];
 
         form.addEventListener('submit', function(event) {
-            //  console.log("clicked submit");
             event.preventDefault();
             addQuestion(subjectInput, questionInput);
+        });
+    }
+
+
+    // improve later
+    function findInStorage(id) {
+        var questions = getStoredQuestions();
+        for (i in questions) {
+            if (questions[i].id == id) {
+                return questions[i];
+            }
+        }
+        return 0;
+    }
+
+    /* Add event listener to left pane list, render expanded question
+     * in right pane when a question from the list is clicked.
+     */
+    function addListListener() {
+        leftPane.addEventListener('click', function(event) {
+            //console.log("target: ", event.target, event.target.className);
+            //console.log("parent: ", event.target.parent);
+            //console.log("parentNode: ", event.target.parentNode, event.target.parentNode.className);
+            
+            if (event.target.parentNode.className == 'list-question question-info') {
+                var id = event.target.parentNode.id;
+                var question = findInStorage(id);
+                rightPane.innerHTML = templates.renderExpandedQuestion(question);
+                curr_question_id = id;
+                //addResponseListener();
+                //addResolveListener();
+            }
         });
     }
 
@@ -75,6 +97,7 @@
             storeQuestions(questionsArray);
             leftPane.innerHTML = templates.renderQuestionsList({questions: questionsArray});
             next_new_id++;
+            localStorage.next_new_id = JSON.stringify(next_new_id);
         }
         subjectInput.value = "";
         questionInput.value = "";
@@ -87,10 +110,11 @@
     // TODO: display question list initially (if there are existing questions)
     
     var questionsArray = getStoredQuestions();
+    var next_new_id = 1;
+    localStorage.next_new_id = JSON.stringify(next_new_id);
     leftPane.innerHTML = templates.renderQuestionsList({questions : questionsArray});
     addFormListener();
-    
-    var next_new_id = 1;
+    addListListener();
 
 
 })(this, this.document);
