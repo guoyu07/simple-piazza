@@ -88,7 +88,7 @@
                 rightPane.innerHTML = templates.renderExpandedQuestion(question);
                 curr_question_id = id;
                 addResponseListener();
-                //addResolveListener();
+                addResolveListener();
             }
         });
     }
@@ -113,6 +113,19 @@
         responseForm.addEventListener('submit', function(event) {
             event.preventDefault();
             addResponse(nameInput, responseInput);
+        });
+    }
+
+
+    function addResolveListener() {
+        var resolveBtn = $('.resolve-container .btn')[0];
+        resolveBtn.addEventListener('click', function(event) {
+            index = findIndex(curr_question_id);
+            questionsArray.splice(index,1);
+            storeQuestions(questionsArray);
+            leftPane.innerHTML = templates.renderQuestionsList({questions: questionsArray});
+            rightPane.innerHTML = templates.renderQuestionForm();
+            addFormListener();
         });
     }
 
