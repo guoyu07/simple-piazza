@@ -64,6 +64,15 @@
         return 0;
     }
 
+    function findIndex(id) {
+        for (i in questionsArray) {
+            if (questionsArray[i].id == id) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     /* Add event listener to left pane list, render expanded question
      * in right pane when a question from the list is clicked.
      */
@@ -78,18 +87,33 @@
                 var question = findInStorage(id);
                 rightPane.innerHTML = templates.renderExpandedQuestion(question);
                 curr_question_id = id;
-                //addResponseListener();
+                addResponseListener();
                 //addResolveListener();
             }
         });
     }
 
-
+    /* Add event listener to new question button in left pane, renders
+     * new form in right pane
+     */
     function addNewListener() {
         newBtn.addEventListener('click', function(event) {
             rightPane.innerHTML = templates.renderQuestionForm();
             addFormListener();
         })
+    }
+
+
+    function addResponseListener() {
+
+        var responseForm = $('#response-form')[0];
+        var nameInput = $(':input[name="name"]')[0];
+        var responseInput = $(':input[name="response"]')[0];
+
+        responseForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            addResponse(nameInput, responseInput);
+        });
     }
 
 
@@ -112,12 +136,30 @@
     }
 
 
+    function addResponse(nameInput, responseInput) {
+        if (nameInput.value && responseInput.value) {
+            i = findIndex(curr_question_id);
+            questionsArray[i].responses.push({
+                name: nameInput.value,
+                response: responseInput.value
+            });
+            storeQuestions(questionsArray);
+            rightPane.innerHTML = templates.renderExpandedQuestion(questionsArray[i]);
+        }
+        nameInput.value = "";
+        responseInput.value = "";
+
+        addResponseListener();
+    }
+
+
     // display question form initially
     rightPane.innerHTML = templates.renderQuestionForm();
 
     // TODO: display question list initially (if there are existing questions)
     
     var questionsArray = getStoredQuestions();
+    var curr_question_id = 0;
     var next_new_id = 1;
     localStorage.next_new_id = JSON.stringify(next_new_id);
     leftPane.innerHTML = templates.renderQuestionsList({questions : questionsArray});
